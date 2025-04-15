@@ -228,7 +228,7 @@ lug_wiki="https://starcitizen-lug.github.io"
 lug_wiki_nixos="https://github.com/starcitizen-lug/knowledge-base/wiki/Tips-and-Tricks#nixos"
 
 # RSI Installer version and url
-rsi_installer="RSI Launcher-Setup-2.2.0.exe"
+rsi_installer="RSI Launcher-Setup-2.3.1.exe"
 rsi_installer_url="https://install.robertsspaceindustries.com/rel/2/$rsi_installer"
 
 # Winetricks download url
@@ -2725,78 +2725,79 @@ install_game_wine() {
     fi
 
     # Call the preflight check and confirm the user is ready to proceed
-    preflight_check "wine"
-    if [ "$?" -eq 1 ]; then
-        # There were errors
-        install_question="Before proceeding, be sure all Preflight Checks have passed!\n\nPlease refer to our Quick Start Guide:\n$lug_wiki\n\nAre you ready to continue?"
-    else
-        # No errors
-        install_question="Before proceeding, please refer to our Quick Start Guide:\n$lug_wiki\n\nAll Preflight Checks have passed\nAre you ready to continue?"
-    fi
-    if ! message question "$install_question"; then
-        return 1
-    fi
+    # preflight_check "wine"
+    # if [ "$?" -eq 1 ]; then
+    #     # There were errors
+    #     install_question="Before proceeding, be sure all Preflight Checks have passed!\n\nPlease refer to our Quick Start Guide:\n$lug_wiki\n\nAre you ready to continue?"
+    # else
+    #     # No errors
+    #     install_question="Before proceeding, please refer to our Quick Start Guide:\n$lug_wiki\n\nAll Preflight Checks have passed\nAre you ready to continue?"
+    # fi
+    # if ! message question "$install_question"; then
+    #     return 1
+    # fi
 
     # Get the install path from the user
-    if message question "Would you like to use the default install path?\n\n$HOME/Games/star-citizen"; then
-        # Set the default install path
-        install_dir="$HOME/Games/star-citizen"
-    else
-        if [ "$use_zenity" -eq 1 ]; then
-            if message options "Create my own prefix dir" "Continue" "After clicking Continue, select your Star Citizen install location.\nA new subdirectory named 'star-citizen' will be created in the selected location. This will be your wine prefix.\n\nIf you know what you are doing and want to create your own prefix directory, choose \"Create my own prefix dir\""; then
-                # Default, create the star-citizen directory
-                install_prefix="star-citizen"
-            else
-                # User will create their own prefix directory
-                install_prefix=""
-            fi
+    install_dir="$HOME/Games/star-citizen"
+    # if message question "Would you like to use the default install path?\n\n$HOME/Games/star-citizen"; then
+    #     # Set the default install path
+    #     install_dir="$HOME/Games/star-citizen"
+    # else
+    #     if [ "$use_zenity" -eq 1 ]; then
+    #         if message options "Create my own prefix dir" "Continue" "After clicking Continue, select your Star Citizen install location.\nA new subdirectory named 'star-citizen' will be created in the selected location. This will be your wine prefix.\n\nIf you know what you are doing and want to create your own prefix directory, choose \"Create my own prefix dir\""; then
+    #             # Default, create the star-citizen directory
+    #             install_prefix="star-citizen"
+    #         else
+    #             # User will create their own prefix directory
+    #             install_prefix=""
+    #         fi
 
-            # Get the install path from the user
-            while true; do
-                install_dir="$(zenity --file-selection --directory --title="Choose your Star Citizen install directory" --filename="$HOME/" 2>/dev/null)"
+    #         # Get the install path from the user
+    #         while true; do
+    #             install_dir="$(zenity --file-selection --directory --title="Choose your Star Citizen install directory" --filename="$HOME/" 2>/dev/null)"
 
-                if [ "$?" -eq -1 ]; then
-                    message error "An unexpected error has occurred. The Helper is unable to proceed."
-                    return 1
-                elif [ -z "$install_dir" ]; then
-                    # User clicked cancel or something else went wrong
-                    message warning "Installation cancelled."
-                    return 1
-                fi
+    #             if [ "$?" -eq -1 ]; then
+    #                 message error "An unexpected error has occurred. The Helper is unable to proceed."
+    #                 return 1
+    #             elif [ -z "$install_dir" ]; then
+    #                 # User clicked cancel or something else went wrong
+    #                 message warning "Installation cancelled."
+    #                 return 1
+    #             fi
 
-                # Add the wine prefix subdirectory to the install path
-                if [ -n "$install_prefix" ]; then
-                    install_dir="$install_dir/$install_prefix"
-                fi
+    #             # Add the wine prefix subdirectory to the install path
+    #             if [ -n "$install_prefix" ]; then
+    #                 install_dir="$install_dir/$install_prefix"
+    #             fi
 
-                # Sanity check the chosen directory a bit to catch some possible mistakes
-                if [ "$install_dir" = "/" ] || [ "$install_dir" = "$HOME" ] || [ "$install_dir" = "$HOME/Games" ]; then
-                    if message question "Something seems off! This directory will become your wine prefix. Are you really sure this is what you want?\n\n$install_dir"; then
-                        break
-                    fi
-                else
-                    # All good, break out of the loop and continue
-                    break
-                fi
-            done
-        else
-            # No Zenity, use terminal-based menus
-            clear
-            # Get the install path from the user
-            printf "Enter the desired Star Citizen install path (case sensitive)\nie. /home/USER/Games/star-citizen\n\n"
-            while read -rp "Install path: " install_dir; do
-                if [ -z "$install_dir" ]; then
-                    printf "Invalid directory. Please try again.\n\n"
-                elif [ ! -d "$install_dir" ]; then
-                    if message question "That directory does not exist.\nWould you like it to be created for you?\n"; then
-                        break
-                    fi
-                else
-                    break
-                fi
-            done
-        fi
-    fi
+    #             # Sanity check the chosen directory a bit to catch some possible mistakes
+    #             if [ "$install_dir" = "/" ] || [ "$install_dir" = "$HOME" ] || [ "$install_dir" = "$HOME/Games" ]; then
+    #                 if message question "Something seems off! This directory will become your wine prefix. Are you really sure this is what you want?\n\n$install_dir"; then
+    #                     break
+    #                 fi
+    #             else
+    #                 # All good, break out of the loop and continue
+    #                 break
+    #             fi
+    #         done
+    #     else
+    #         # No Zenity, use terminal-based menus
+    #         clear
+    #         # Get the install path from the user
+    #         printf "Enter the desired Star Citizen install path (case sensitive)\nie. /home/USER/Games/star-citizen\n\n"
+    #         while read -rp "Install path: " install_dir; do
+    #             if [ -z "$install_dir" ]; then
+    #                 printf "Invalid directory. Please try again.\n\n"
+    #             elif [ ! -d "$install_dir" ]; then
+    #                 if message question "That directory does not exist.\nWould you like it to be created for you?\n"; then
+    #                     break
+    #                 fi
+    #             else
+    #                 break
+    #             fi
+    #         done
+    #     fi
+    # fi
 
     # Create the game path
     mkdir -p "$install_dir"
@@ -2845,34 +2846,18 @@ install_game_wine() {
     export WINE="$wine_path/wine"
     export WINESERVER="$wine_path/wineserver"
     export WINEPREFIX="$install_dir"
-    debug_print continue "Preparing the wine prefix. Please wait; this will take a moment..."
-    "$winetricks_bin" -q arial tahoma dxvk powershell win11 >"$tmp_install_log" 2>&1
 
-    if [ "$?" -eq 1 ]; then
-        if message question "Wine prefix creation failed. Aborting installation.\nThe install log was written to\n$tmp_install_log\n\nDo you want to delete\n${install_dir}?"; then
-            debug_print continue "Deleting $install_dir..."
-            rm -r --interactive=never "$install_dir"
-        fi
-        "$wine_path"/wineserver -k
-        return 1
-    fi
+    debug_print continue "Preparing the wine prefix. Please wait; this will take a moment..."
+    # Run winetricks without checking for errors
+    "$winetricks_bin" -q arial tahoma dxvk powershell win11
 
     # Add registry key that prevents wine from creating unnecessary file type associations
-    "$wine_path"/wine reg add "HKEY_CURRENT_USER\Software\Wine\FileOpenAssociations" /v Enable /d N /f >>"$tmp_install_log" 2>&1
+    # Using || true to ignore errors
+    "$wine_path"/wine reg add "HKEY_CURRENT_USER\Software\Wine\FileOpenAssociations" /v Enable /d N /f >>"$tmp_install_log" 2>&1 || true
 
-    # Run the installer
+    # Run the installer without checking for errors
     debug_print continue "Installing the launcher. Please wait; this will take a moment..."
-    "$wine_path"/wine "$tmp_dir/$rsi_installer" /S >>"$tmp_install_log" 2>&1
-
-    if [ "$?" -eq 1 ]; then
-        # User cancelled or there was an error
-        if message question "Installation aborted. The install log was written to\n$tmp_install_log\n\nDo you want to delete\n${install_dir}?"; then
-            debug_print continue "Deleting $install_dir..."
-            rm -r --interactive=never "$install_dir"
-        fi
-        "$wine_path"/wineserver -k
-        return 0
-    fi
+    "$wine_path"/wine "$tmp_dir/$rsi_installer" /S
 
     # Kill the wine process after installation
     # To prevent unexpected lingering background wine processes, it should be launched by the user attached to a terminal
@@ -2957,7 +2942,7 @@ install_game_wine() {
         update-desktop-database "$HOME/.local/share/applications"
     fi
 
-    message info "Installation has finished. The install log was written to $tmp_install_log\n\nTo start the RSI Launcher, run the following launch script in a terminal\nEdit the environment variables in the script as needed:\n     $installed_launch_script\n\nYou may also start the RSI Launcher using the following .desktop files:\n     $home_desktop_file\n     $localshare_desktop_file"
+    # message info "Installation has finished. The install log was written to $tmp_install_log\n\nTo start the RSI Launcher, run the following launch script in a terminal\nEdit the environment variables in the script as needed:\n     $installed_launch_script\n\nYou may also start the RSI Launcher using the following .desktop files:\n     $home_desktop_file\n     $localshare_desktop_file"
 }
 
 # Download a default wine runner for use by the non-lutris installer
@@ -3264,61 +3249,75 @@ menu_heading_zenity="<b><big>Greetings, Space Penguin!</big>\n\nThis tool is pro
 menu_heading_terminal="Greetings, Space Penguin!\n\nThis tool is provided by the Star Citizen Linux Users Group\nFor help, see our wiki: $lug_wiki"
 
 # First run
-firstrun_message="It looks like this is your first time running the Helper\n\nWould you like to run the Preflight Check and install Star Citizen?"
-if [ "$use_zenity" -eq 1 ]; then
-    firstrun_message="$menu_heading_zenity\n\n$firstrun_message"
-else
-    firstrun_message="$menu_heading_terminal\n\n$firstrun_message"
-fi
-if [ "$is_firstrun" = "true" ]; then
-    if message question "$firstrun_message"; then
-        if message options "Wine" "Lutris" "Which install method would you like to use?"; then
-            install_game_lutris
-        else
-            install_game_wine
-        fi
-    fi
-    # Store the first run state for subsequent launches
-    if [ ! -d "$conf_dir/$conf_subdir" ]; then
-        mkdir -p "$conf_dir/$conf_subdir"
-    fi
-    echo "false" > "$conf_dir/$conf_subdir/$firstrun_conf"
-fi
+# firstrun_message="It looks like this is your first time running the Helper\n\nWould you like to run the Preflight Check and install Star Citizen?"
+# if [ "$use_zenity" -eq 1 ]; then
+#     firstrun_message="$menu_heading_zenity\n\n$firstrun_message"
+# else
+#     firstrun_message="$menu_heading_terminal\n\n$firstrun_message"
+# fi
+# if [ "$is_firstrun" = "true" ]; then
+#     if message question "$firstrun_message"; then
+#         if message options "Wine" "Lutris" "Which install method would you like to use?"; then
+#             install_game_lutris
+#         else
+#             install_game_wine
+#         fi
+#     fi
+#     # Store the first run state for subsequent launches
+#     if [ ! -d "$conf_dir/$conf_subdir" ]; then
+#         mkdir -p "$conf_dir/$conf_subdir"
+#     fi
+#     echo "false" > "$conf_dir/$conf_subdir/$firstrun_conf"
+# fi
 
 # Loop the main menu until the user selects quit
-while true; do
-    # Configure the menu
-    menu_text_zenity="$menu_heading_zenity"
-    menu_text_terminal="$menu_heading_terminal"
-    menu_text_height="120"
-    menu_type="radiolist"
+# while true; do
+#     # Configure the menu
+#     menu_text_zenity="$menu_heading_zenity"
+#     menu_text_terminal="$menu_heading_terminal"
+#     menu_text_height="120"
+#     menu_type="radiolist"
 
-    # Configure the menu options
-    preflight_msg="Preflight Check (System Optimization)"
-    install_msg_wine="Install Star Citizen with Wine"
-    install_msg_lutris="Install Star Citizen with Lutris"
-    runners_msg_wine="Manage Wine Runners (non-Lutris)"
-    runners_msg_lutris="Manage Lutris Runners"
-    dxvk_msg="Manage Lutris DXVK Versions"
-    maintenance_msg="Maintenance and Troubleshooting"
-    randomizer_msg="Get a random Penguin's Star Citizen referral code"
-    quit_msg="Quit"
+#     # Configure the menu options
+#     preflight_msg="Preflight Check (System Optimization)"
+#     install_msg_wine="Install Star Citizen with Wine"
+#     install_msg_lutris="Install Star Citizen with Lutris"
+#     runners_msg_wine="Manage Wine Runners (non-Lutris)"
+#     runners_msg_lutris="Manage Lutris Runners"
+#     dxvk_msg="Manage Lutris DXVK Versions"
+#     maintenance_msg="Maintenance and Troubleshooting"
+#     randomizer_msg="Get a random Penguin's Star Citizen referral code"
+#     quit_msg="Quit"
 
-    # Set the options to be displayed in the menu
-    menu_options=("$preflight_msg" "$install_msg_wine" "$install_msg_lutris" "$runners_msg_wine" "$runners_msg_lutris" "$dxvk_msg" "$maintenance_msg" "$randomizer_msg" "$quit_msg")
-    # Set the corresponding functions to be called for each of the options
-    menu_actions=("preflight_check" "install_game_wine" "install_game_lutris" "runner_manage_wine" "runner_manage_lutris" "dxvk_manage_lutris" "maintenance_menu" "referral_randomizer" "quit")
+#     # Set the options to be displayed in the menu
+#     menu_options=("$preflight_msg" "$install_msg_wine" "$install_msg_lutris" "$runners_msg_wine" "$runners_msg_lutris" "$dxvk_msg" "$maintenance_msg" "$randomizer_msg" "$quit_msg")
+#     # Set the corresponding functions to be called for each of the options
+#     menu_actions=("preflight_check" "install_game_wine" "install_game_lutris" "runner_manage_wine" "runner_manage_lutris" "dxvk_manage_lutris" "maintenance_menu" "referral_randomizer" "quit")
 
-    # Calculate the total height the menu should be
-    # menu_option_height = pixels per menu option
-    # #menu_options[@] = number of menu options
-    # menu_text_height = height of the title/description text
-    # menu_text_height_zenity4 = added title/description height for libadwaita bigness
-    menu_height="$(($menu_option_height * ${#menu_options[@]} + $menu_text_height + $menu_text_height_zenity4))"
+#     # Calculate the total height the menu should be
+#     # menu_option_height = pixels per menu option
+#     # #menu_options[@] = number of menu options
+#     # menu_text_height = height of the title/description text
+#     # menu_text_height_zenity4 = added title/description height for libadwaita bigness
+#     menu_height="$(($menu_option_height * ${#menu_options[@]} + $menu_text_height + $menu_text_height_zenity4))"
 
-    # Set the label for the cancel button
-    cancel_label="Quit"
+#     # Set the label for the cancel button
+#     cancel_label="Quit"
 
-    # Call the menu function.  It will use the options as configured above
-    menu
-done
+#     # Call the menu function.  It will use the options as configured above
+#     menu
+# done
+
+# Save first run state immediately
+echo "false" > "$conf_dir/$conf_subdir/$firstrun_conf"
+
+# Skip the menu and automatically run install_game_wine() and then quit
+install_game_wine
+quit
+
+# The following menu loop won't be reached because of the quit call above
+# It's kept for reference in case you need to revert the changes
+# while true; do
+#     menu
+# done
+
